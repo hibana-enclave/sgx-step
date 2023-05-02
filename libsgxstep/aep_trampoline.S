@@ -18,20 +18,6 @@
  *  along with SGX-Step. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* 32-bit compatibility ~~following Intel SGX-SDK convention. */
-#if defined(M32)
-    #define xax  eax
-    #define xbx  ebx
-    #define xcx  ecx
-    #define xdi  edi
-    #define movx movl
-#else
-    #define xax  rax
-    #define xbx  rbx
-    #define xcx  rcx
-    #define xdi  rdi
-    #define movx movq
-#endif
 
 /* 
  * ---------------------------------------------------------------------
@@ -47,38 +33,5 @@
     .global sgx_step_aep_trampoline
     .type sgx_step_aep_trampoline, @function
 sgx_step_aep_trampoline:
-    /*
-     * Save TCS address thread-local on the stack
-     * NOTE: maintain 16-byte stack alignment (ABI calling convention)
-     */
-    push %xbx
-    mov %rsp, %rbp
-    and $~0xf, %rsp
-
-    /* optional C function callback */
-    lea sgx_step_aep_cb(%rip), %xax
-    mov (%xax), %xax
-    test %xax, %xax
-    je .Leresume
-    call *%xax
-
-.Leresume:
-    incl sgx_step_eresume_cnt(%rip)
-
-    /* restore stack and TCS address */
-    mov %rbp, %rsp
-    pop %xbx
-
-    lea sgx_step_aep_trampoline(%rip), %xcx   /* AEP address */
-
-    prefetch nemesis_tsc_eresume(%rip)
-    mfence
-
-    rdtsc
-    mov %eax, nemesis_tsc_eresume(%rip)
-
-    mov $3, %xax                        /* ERESUME leaf */
-
-.global sgx_step_aep_eresume
-sgx_step_aep_eresume:
-    .byte 0x0f, 0x01, 0xd7              /* ENCLU */
+    movq $0, %r11
+    movq (%r11), %r11                   /* raise segfault since the function is not used */ 

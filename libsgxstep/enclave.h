@@ -58,29 +58,29 @@ int edbgrdwr(void *adrs, void* res, int len, int write);
 
 /* HACK: to avoid having to retrieve the SSA framesize from the untrusted
    runtime (driver), we assume a standard/hard-coded SSA framesize of 1 page */
+#define SGX_SSAFRAMESIZE            4096
 //TODO determine this at runtime..
-#ifndef SGX_SSAFRAMESIZE
-    #define SGX_SSAFRAMESIZE            4096
-#endif
+// SSA framesize for Gramine seems to be as follows
+// #define SGX_SSAFRAMESIZE            16384
 
 struct gprsgx_region {
-    uint64_t rax;
-    uint64_t rcx;
-    uint64_t rdx;
-    uint64_t rbx;
-    uint64_t rsp;
-    uint64_t rbp;
-    uint64_t rsi;
-    uint64_t rdi;
-    uint64_t r8;
-    uint64_t r9;
-    uint64_t r10;
-    uint64_t r11;
-    uint64_t r12;
-    uint64_t r13;
-    uint64_t r14;
-    uint64_t r15;
-    uint64_t rflags;
+    uint64_t rax;       //  1
+    uint64_t rcx;       //  2 
+    uint64_t rdx;       //  3 
+    uint64_t rbx;       //  4
+    uint64_t rsp;       //  5 
+    uint64_t rbp;       //  6
+    uint64_t rsi;       //  7 
+    uint64_t rdi;       //  8 
+    uint64_t r8;        //  9
+    uint64_t r9;        // 10 
+    uint64_t r10;       // 11
+    uint64_t r11;       // 12
+    uint64_t r12;       // 13
+    uint64_t r13;       // 14
+    uint64_t r14;       // 15 
+    uint64_t r15;       // 16 
+    uint64_t rflags;    // 17
     uint64_t rip;
     uint64_t ursp;
     uint64_t urbp;
