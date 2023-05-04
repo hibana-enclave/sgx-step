@@ -73,6 +73,9 @@ int main( int argc, char **argv )
 {
     idt_t idt = {0};
     ASSERT( !claim_cpu(VICTIM_CPU) );
+    ASSERT( !prepare_system_for_benchmark(PSTATE_PCT) );
+    print_system_settings();
+    
     map_idt(&idt);
 
     #if 0
