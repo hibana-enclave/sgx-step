@@ -33,10 +33,10 @@ int init_pstate_dir_status(){
     struct stat sb;
     int err = stat(path, &sb);
     if (err == 0 && S_ISDIR(sb.st_mode)) {
-        printf(" [ sgx-step ] intel_pstate is available \n"); 
+        printf("[ sched.c ] intel_pstate is available \n"); 
         return 1; 
     } else {
-        printf(" [ sgx-step ] intel_pstate is not available \n"); 
+        printf("[ sched.c ] intel_pstate is not available \n"); 
         return 0; 
     }
 }
