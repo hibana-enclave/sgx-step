@@ -28,15 +28,15 @@
 
 
 int init_pstate_dir_status(){
-    const char path[] = "/System/Applications"; 
-    printf("[ sgx-step ] opening path at %s ...\n", path); 
+    const char path[] = "/sys/devices/system/cpu/intel_pstate"; 
+    printf("[sched.c] opening path at %s ...\n", path); 
     struct stat sb;
     int err = stat(path, &sb);
     if (err == 0 && S_ISDIR(sb.st_mode)) {
-        printf("[ sched.c ] intel_pstate is available \n"); 
+        printf("[sched.c] intel_pstate is available \n"); 
         return 1; 
     } else {
-        printf("[ sched.c ] intel_pstate is not available \n"); 
+        printf("[sched.c] intel_pstate is not available \n"); 
         return 0; 
     }
 }
@@ -120,7 +120,7 @@ if (has_pstate()){
 	file_read_int( "/sys/devices/system/cpu/intel_pstate/max_perf_pct", &result );
 	return result;
 }else{
-	return 0;
+	return -1;
 }
 }
 
@@ -141,7 +141,7 @@ if (has_pstate()){
 	file_read_int("/sys/devices/system/cpu/intel_pstate/min_perf_pct", &result);
 	return result;
 }else{
-	return 0;
+	return -1;
 }
 }
 
@@ -171,7 +171,7 @@ if (has_turbo()){
     file_read_int( "/sys/devices/system/cpu/intel_pstate/no_turbo", &result);
 	return (result == 0)? 1 : 0;
 }else{
-  return 0;
+  return -1;
 }
 }
 
