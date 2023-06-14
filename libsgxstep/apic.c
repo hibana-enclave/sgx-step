@@ -47,7 +47,7 @@ void apic_init(void)
     uintptr_t apic_base_addr = 0x0;
     #if APIC_CONFIG_MSR
         uint64_t apic_base_msr = 0x0;
-        rdmsr_on_cpu(IA32_APIC_BASE_MSR, get_cpu(), &apic_base_msr);
+        rdmsr_on_cpu(IA32_APIC_BASE_MSR, VICTIM_CPU, &apic_base_msr);
         ASSERT( (apic_base_msr & APIC_BASE_MSR_ENABLE) );
         ASSERT( !(apic_base_msr & APIC_BASE_MSR_X2APIC) );
         apic_base_addr = apic_base_msr & ~APIC_BASE_ADDR_MASK;
@@ -92,6 +92,6 @@ int apic_timer_deadline(void)
     /* In xAPIC mode the memory-mapped write to LVTT needs to be serialized. */
     #if APIC_CONFIG_MSR
         asm volatile("mfence" : : : "memory");
-        wrmsr_on_cpu(IA32_TSC_DEADLINE_MSR, get_cpu(), 1);
+        wrmsr_on_cpu(IA32_TSC_DEADLINE_MSR, VICTIM_CPU, 1);
     #endif
 }
