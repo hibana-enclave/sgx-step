@@ -63,8 +63,9 @@ void apic_init(void)
     ASSERT(apic_read(APIC_ID) != -1);
 }
 
-int apic_timer_count_print(){
+int apic_timer_count_print(void){
     libsgxstep_info("APIC timer (tmict=%x/tmcc%x)", apic_read(APIC_TMICT), apic_read(APIC_TMCCT));
+    return 0; 
 }
 
 int apic_timer_oneshot(uint8_t vector)
