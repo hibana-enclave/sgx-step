@@ -64,31 +64,30 @@ int edbgrdwr(void *adrs, void* res, int len, int write);
 // #define SGX_SSAFRAMESIZE            16384
 
 struct gprsgx_region {
-    uint64_t rax;       //  0
-    uint64_t rcx;       //  1 
-    uint64_t rdx;       //  2 
-    uint64_t rbx;       //  3
-    uint64_t rsp;       //  4 
-    uint64_t rbp;       //  5
-    uint64_t rsi;       //  6 
-    uint64_t rdi;       //  7 
-    uint64_t r8;        //  8
-    uint64_t r9;        //  9 
-    uint64_t r10;       // 10
-    uint64_t r11;       // 11
-    uint64_t r12;       // 12
-    uint64_t r13;       // 13
-    uint64_t r14;       // 14 
-    uint64_t r15;       // 15 
-    uint64_t rflags;    // 16
-    uint64_t rip;       // 17 = 17 * 8 = 136
-    uint64_t ursp;      // 18 
-    uint64_t urbp;      // 19 
+    uint64_t rax;       //  1
+    uint64_t rcx;       //  2 
+    uint64_t rdx;       //  3 
+    uint64_t rbx;       //  4
+    uint64_t rsp;       //  5 
+    uint64_t rbp;       //  6
+    uint64_t rsi;       //  7 
+    uint64_t rdi;       //  8 
+    uint64_t r8;        //  9
+    uint64_t r9;        // 10 
+    uint64_t r10;       // 11
+    uint64_t r11;       // 12
+    uint64_t r12;       // 13
+    uint64_t r13;       // 14
+    uint64_t r14;       // 15 
+    uint64_t r15;       // 16 
+    uint64_t rflags;    // 17
+    uint64_t rip;
+    uint64_t ursp;
+    uint64_t urbp;
     uint32_t exitinfo;
-    uint32_t reserved;  // 20 = 20 * 8 = 160  
-    uint64_t fsbase;    // 21 
-    uint64_t gsbase;    // 22 
-                        // In total, 23 * 8 = 184 (SGX_GPRSGX_SIZE)
+    uint32_t reserved;
+    uint64_t fsbase;
+    uint64_t gsbase;
 };
 
 typedef union {

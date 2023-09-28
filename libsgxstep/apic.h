@@ -60,6 +60,7 @@
 extern void* apic_base;
 extern uint32_t apic_lvtt;
 void apic_init(void);
+//int aex_count = 0;
 
 /*
  * From Linux kernel source: /arch/x86/include/asm/apic.h
@@ -72,7 +73,7 @@ static inline int apic_write(uint32_t reg, uint32_t v)
     if (!apic_base) apic_init();
 
     addr = (volatile uint32_t *)(apic_base + reg);
-    asm volatile ("movl %1, %0\n\t"
+    __asm__ __volatile__ ("movl %1, %0\n\t"
         :"=m"(*addr):"r"(v):);
 
     return 0;
@@ -89,7 +90,6 @@ static inline uint32_t apic_read(uint32_t reg)
 #define apic_timer_irq(tsc) apic_write(APIC_TMICT, tsc);
 #define apic_send_ipi_self(n) apic_write(APIC_ICR, APIC_ICR_VECTOR(n) | APIC_ICR_DELIVERY_FIXED | APIC_ICR_LEVEL_ASSERT | APIC_ICR_DEST_SELF)
 
-int apic_timer_count_print(void); 
 int apic_timer_oneshot(uint8_t vector);
 int apic_timer_deadline(void);
 

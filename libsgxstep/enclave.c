@@ -35,7 +35,7 @@ extern void* sgx_get_tcs(void);
 
 /* See aep_trampoline.S to see how these are used. */
 // extern void sgx_step_aep_trampoline(void);
-extern aep_cb_t sgx_step_aep_cb; 
+extern aep_cb_t sgx_step_aep_cb;
 uint32_t nemesis_tsc_eresume = 0x0;
 
 extern int fd_step;
