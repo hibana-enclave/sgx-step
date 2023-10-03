@@ -2,16 +2,17 @@ LIBSGXSTEP_DIR       = ../..
 LIBSGXSTEP           = $(LIBSGXSTEP_DIR)/libsgxstep
 -include $(LIBSGXSTEP)/Makefile.config
 
+LIBSGXSTEP_SILENT    = 1
+
 ifeq ($(SGX_SDK),)
     SGX_SDK          = /opt/intel/sgxsdk
 endif
 export SGX_SDK
 ifneq ($(SGX_SDK), /opt/intel/sgxsdk)
-    URTS_LD_LIBRARY_PATH = LD_LIBRARY_PATH=$(LIBSGXSTEP_DIR)/sdk/intel-sdk/linux-sgx/psw/urts/linux
+    URTS_LD_LIBRARY_PATH = LD_LIBRARY_PATH=$(LIBSGXSTEP_DIR)/linux-sgx/psw/urts/linux
 endif
 
-ENCLAVE              = Enclave
-SUBDIRS              = $(ENCLAVE) $(LIBSGXSTEP)
+SUBDIRS              = $(LIBSGXSTEP)
 
 CC                   = gcc
 AS                   = gcc
@@ -28,12 +29,15 @@ endif
 CFLAGS              += -fPIC -fno-stack-protector -fno-builtin -fno-jump-tables \
                        -fno-common -Wno-attributes -g -D_GNU_SOURCE -O0
 INCLUDE              = -I$(SGX_SDK)/include/ -I$(LIBSGXSTEP_DIR)
-LDFLAGS             += -lsgx-step -lencl_proxy -lsgx_urts \
+LDFLAGS             += -lsgx-step -lsgx_urts \
                        -lsgx_uae_service -pthread $(SUBDIRS:%=-L %) -L$(SGX_SDK)/lib$(LIB_SUFX)/ \
                        -L$(LIBSGXSTEP_DIR)/linux-sgx/psw/urts/linux
 
-SOURCES              = $(shell ls *.c)
-OBJECTS              = $(SOURCES:.c=.o)
+C_SOURCES            = $(shell ls *.c)
+ASM_SOURCES          = $(shell ls *.S)
+C_OBJECTS            = $(C_SOURCES:.c=.o)
+ASM_OBJECTS          = $(ASM_SOURCES:.S=.o)
+OBJECTS              = $(C_OBJECTS) $(ASM_OBJECTS)
 OUTPUT               = app
 
 BUILDDIRS            = $(SUBDIRS:%=build-%)
@@ -59,6 +63,7 @@ CFLAGS              += -DATTACK_SCENARIO=$(ATTACK) -DNUM_RUNS=$(NUM)
 
 MAKEFLAGS           += --silent
 
+#.SILENT:
 all: $(OUTPUT)
 	
 run: clean all
