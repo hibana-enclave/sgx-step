@@ -45,7 +45,7 @@ int file_write_offset(const char *path, uint8_t *buf, int len, off_t offset)
     int rv, fd;
 
     libsgxstep_info("writing buffer to '%s' (size=%d)", path, len);
-    ASSERT( (fd = open(path, O_WRONLY)) >= 0 && path);
+    ASSERT( (fd = open(path, O_WRONLY)) >= 0 );
     rv = pwrite(fd, buf, len, offset);
     close(fd);
 
