@@ -48,6 +48,6 @@
  *       suitable timer intervals on our evaluation platforms by
  *       tweaking and observing the NOP microbenchmark erip results.
  */
-#define SGX_STEP_TIMER_INTERVAL 53
+//#define SGX_STEP_TIMER_INTERVAL 53
 
 #endif
