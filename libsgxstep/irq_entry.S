@@ -36,6 +36,18 @@ __ss_irq_rdx:
     .align 0x1000
     .global __ss_irq_handler
 __ss_irq_handler:
+    /* Nemesis IRQ latency timestamp */
+    mov %rax, __ss_irq_rax(%rip)
+    mov %rdx, __ss_irq_rdx(%rip)
+    rdtsc
+    mov %eax, nemesis_tsc_aex(%rip)
+
+    /* IRQ bookkeeping */
+    incl __ss_irq_fired(%rip)
+    incl __ss_irq_count(%rip)
+    movw %cs,  __ss_irq_cpl(%rip)
+    andw $0x3, __ss_irq_cpl(%rip)
+
     /* apic_write(APIC_EOI, 0x0); */
     lea apic_base(%rip), %rax
     mov (%rax),%rax
@@ -44,6 +56,8 @@ __ss_irq_handler:
     add $0xb0, %rax
     movl $0x0, (%rax)
 1:
+    mov __ss_irq_rax(%rip), %rax
+    mov __ss_irq_rdx(%rip), %rdx
     iretq
 
 /* ********************************************************************** */
