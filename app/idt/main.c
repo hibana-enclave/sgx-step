@@ -131,6 +131,7 @@ void do_irq_test(int do_exec_priv)
                 post_irq("APIC timer");
             }
         }
+        apic_timer_deadline();
     #endif
 }
 
@@ -155,9 +156,9 @@ int main( int argc, char **argv )
         info("back from exec_priv(pre_irq) with CPL=%d", my_cpl);
     #endif
 
-    #if INFINITE_LOOP
-    while(1)
-    #endif
+    //#if INFINITE_LOOP
+    //while(1)
+    //#endif
         do_irq_test(/*do_exec_priv=*/ DO_EXEC_PRIV);
 
     info("all is well; irq_count=%d; exiting..", __ss_irq_count);

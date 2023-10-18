@@ -34,7 +34,7 @@ struct sgx_step_enclave_info
     char *drv;
 };
 
-extern uint64_t nemesis_tsc_eresume, nemesis_tsc_aex;
+extern uint32_t nemesis_tsc_eresume, nemesis_tsc_aex;
 extern int sgx_step_eresume_cnt;
 
 typedef void (*aep_cb_t)(void);
@@ -58,36 +58,37 @@ int edbgrdwr(void *adrs, void* res, int len, int write);
 
 /* HACK: to avoid having to retrieve the SSA framesize from the untrusted
    runtime (driver), we assume a standard/hard-coded SSA framesize of 1 page */
+#define SGX_SSAFRAMESIZE            4096
 //TODO determine this at runtime..
-#ifndef SGX_SSAFRAMESIZE
-    #define SGX_SSAFRAMESIZE            4096
-#endif
+// SSA framesize for Gramine seems to be as follows
+// #define SGX_SSAFRAMESIZE            16384
 
 struct gprsgx_region {
-    uint64_t rax;
-    uint64_t rcx;
-    uint64_t rdx;
-    uint64_t rbx;
-    uint64_t rsp;
-    uint64_t rbp;
-    uint64_t rsi;
-    uint64_t rdi;
-    uint64_t r8;
-    uint64_t r9;
-    uint64_t r10;
-    uint64_t r11;
-    uint64_t r12;
-    uint64_t r13;
-    uint64_t r14;
-    uint64_t r15;
-    uint64_t rflags;
-    uint64_t rip;
-    uint64_t ursp;
-    uint64_t urbp;
+    uint64_t rax;       //  0
+    uint64_t rcx;       //  1 
+    uint64_t rdx;       //  2 
+    uint64_t rbx;       //  3
+    uint64_t rsp;       //  4 
+    uint64_t rbp;       //  5
+    uint64_t rsi;       //  6 
+    uint64_t rdi;       //  7 
+    uint64_t r8;        //  8
+    uint64_t r9;        //  9 
+    uint64_t r10;       // 10
+    uint64_t r11;       // 11
+    uint64_t r12;       // 12
+    uint64_t r13;       // 13
+    uint64_t r14;       // 14 
+    uint64_t r15;       // 15 
+    uint64_t rflags;    // 16
+    uint64_t rip;       // 17 = 17 * 8 = 136
+    uint64_t ursp;      // 18 
+    uint64_t urbp;      // 19 
     uint32_t exitinfo;
-    uint32_t reserved;
-    uint64_t fsbase;
-    uint64_t gsbase;
+    uint32_t reserved;  // 20 = 20 * 8 = 160  
+    uint64_t fsbase;    // 21 
+    uint64_t gsbase;    // 22 
+                        // In total, 23 * 8 = 184 (SGX_GPRSGX_SIZE)
 };
 
 typedef union {

@@ -24,6 +24,35 @@
 #include "debug.h"
 #include "file.h"
 
+#include <sys/stat.h>
+
+
+int init_pstate_dir_status(){
+    const char path[] = "/sys/devices/system/cpu/intel_pstate"; 
+    printf("[sched.c] opening path at %s ...\n", path); 
+    struct stat sb;
+    int err = stat(path, &sb);
+    if (err == 0 && S_ISDIR(sb.st_mode)) {
+        printf("[sched.c] intel_pstate is available \n"); 
+        return 1; 
+    } else {
+        printf("[sched.c] intel_pstate is not available \n"); 
+        return 0; 
+    }
+}
+
+int has_pstate(void){
+    static int initilized = 0;
+    static int pstate_status = -1; 
+    return initilized ? pstate_status : (initilized = 1, pstate_status = init_pstate_dir_status()); 
+}
+
+
+int has_turbo(void){
+    return has_pstate(); 
+}
+
+
 int claim_cpu(int cpu)
 {
     cpu_set_t cpuset;
@@ -65,86 +94,85 @@ int get_core_id(int cpu_id)
     FILE *fd;
     ASSERT((fd = fopen("/proc/cpuinfo", "r")) >= 0);
 
-    int cur_cpu_id = -1, core_id = -1;
+    int cur_cpu_id = -1, core_id = -1, core_id_prev = -1;
     char buf[100];
     while (fgets(buf, sizeof(buf), fd))
     {
-        sscanf(buf, "processor : %d %*[^\n]", &cur_cpu_id);
-        if (sscanf(buf, "core id : %d %*[^\n]", &core_id) > 0)
+        sscanf(buf, "core id : %d %*[^\n]", &core_id);
+        if (core_id != core_id_prev)
         {
-            if (cur_cpu_id == cpu_id)
-            {
-                debug("Found cpu_id=%d -> core_id=%d", cpu_id, core_id);
-                return core_id;
-            }
+            cur_cpu_id++;
+            if (cur_cpu_id == cpu_id) break;
         }
+        core_id_prev = core_id;
     }
 
-    ASSERT( 0 && "core id not found in /proc/cpuinfo");
-    return -1;
+    debug("Found cpu_id=%d -> core_id=%d", cpu_id, core_id);
+    ASSERT( cur_cpu_id == cpu_id );
+    return core_id;
 }
 
 unsigned int pstate_max_perf_pct( void )
 {
-#if HAS_PSTATE
+if (has_pstate()){
 	int result;
-	
+ 
 	file_read_int( "/sys/devices/system/cpu/intel_pstate/max_perf_pct", &result );
 	return result;
-#else
-	return 0;
-#endif
+}else{
+	return -1;
+}
 }
 
 int pstate_set_max_perf_pct( unsigned int val)
 {
-#if HAS_PSTATE
+if (has_pstate()){
 	return file_write_int( "/sys/devices/system/cpu/intel_pstate/max_perf_pct", (int) val);
-#else
+}else{
     return -1;
-#endif
+}
 }
 
 unsigned int pstate_min_perf_pct( void )
 {
-#if HAS_PSTATE
+if (has_pstate()){
 	int result;
-	
+ 
 	file_read_int("/sys/devices/system/cpu/intel_pstate/min_perf_pct", &result);
 	return result;
-#else
-	return 0;
-#endif
+}else{
+	return -1;
+}
 }
 
 int pstate_set_min_perf_pct( unsigned int val)
 {
-#if HAS_PSTATE
+if (has_pstate()){
 	return file_write_int( "/sys/devices/system/cpu/intel_pstate/min_perf_pct", (int) val);
-#else
+}else{
     return -1;
-#endif
+}
 }
 
 int disable_turbo(void)
 {
-#ifdef HAS_TURBO
+if (has_turbo()){
     return file_write_int( "/sys/devices/system/cpu/intel_pstate/no_turbo", 1);
-#else
+}else{
     return -1;
-#endif
+}
 }
 
 int turbo_enabled( void )
 {
-#ifdef HAS_TURBO
+if (has_turbo()){
 	int result;
 
-  file_read_int( "/sys/devices/system/cpu/intel_pstate/no_turbo", &result);
+    file_read_int( "/sys/devices/system/cpu/intel_pstate/no_turbo", &result);
 	return (result == 0)? 1 : 0;
-#else
-  return 0;
-#endif
+}else{
+  return -1;
+}
 }
 
 int restore_system_state(void)

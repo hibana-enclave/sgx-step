@@ -14,7 +14,7 @@
 /* ********************************************************************** */
     .section isr_section,"awx",@progbits
     .align 0x1000
-    .global __ss_irq_fired, __ss_irq_count, __ss_irq_cpl, apic_base, nemesis_tsc_aex, __ss_irq_rip
+    .global __ss_irq_fired, __ss_irq_count, __ss_irq_cpl, apic_base, nemesis_tsc_aex
 __ss_irq_fired:
     .int 0x0
 __ss_irq_count:
@@ -29,8 +29,6 @@ nemesis_tsc_aex:
 __ss_irq_rax:
     .quad 0x0
 __ss_irq_rdx:
-    .quad 0x0
-__ss_irq_rip:
     .quad 0x0
 
 /* ********************************************************************** */
